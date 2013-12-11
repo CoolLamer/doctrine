@@ -30,7 +30,7 @@
 	"repositories": [
 		{
 			"type": "git",
-			"url": "git://github.com/CoolLamer/doctrine2.git"
+			"url": "http://github.com/CoolLamer/doctrine2.git"
 		}
 	],
 	"require": {
