@@ -36,7 +36,7 @@
 	"require": {
 		"php": ">=5.3.2",
 		"nette/nette": "2.0.*",
-		"doctrine/orm": "dev-slc"
+		"coollamer/orm": "dev-slc"
 	},
 	"suggest": {
 		"nella/console": "Need for console support",
