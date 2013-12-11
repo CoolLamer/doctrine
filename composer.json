@@ -29,7 +29,7 @@
 	"target-dir": "Nella/Doctrine",
 	"repositories": [
 		{
-			"type": "git",
+			"type": "vcs",
 			"url": "http://github.com/CoolLamer/doctrine2.git"
 		}
 	],
