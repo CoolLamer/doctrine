@@ -30,7 +30,7 @@ use Nella\Console\Config\Extension as CExtension,
 /**
  * Doctrine Nella Framework services.
  *
- * @author	Patrik Votoček
+ * @author   Patrik Votoček
  */
 class Extension extends \Nette\Config\CompilerExtension
 {
@@ -58,6 +58,7 @@ class Extension extends \Nette\Config\CompilerExtension
 		'metadataCacheDriver' => TRUE,
 		'queryCacheDriver' => TRUE,
 		'resultCacheDriver' => NULL,
+		'secondLevelCache' => TRUE,
 		'console' => FALSE,
 	);
 
@@ -93,6 +94,16 @@ class Extension extends \Nette\Config\CompilerExtension
 		$cache = $builder->addDefinition($this->prefix('cache'))
 			->setClass('Nella\Doctrine\Cache', array('@cacheStorage'));
 
+		$regionsConfiguration = $builder->addDefinition($this->prefix('regionsConfiguration'))
+			->setClass('Doctrine\ORM\Cache\RegionsConfiguration');
+
+		$defaultSecondCacheFactory = $builder->addDefinition($this->prefix('defaultSecondCacheFactory'))
+			->setClass('Doctrine\ORM\Cache\DefaultCacheFactory', array($regionsConfiguration, $cache));
+
+		$secondLevelCacheConfiguration = $builder->addDefinition($this->prefix('secondLevelCacheConfiguration'))
+			->setClass('Doctrine\ORM\Cache\CacheConfiguration')
+			->addSetup('setCacheFactory', array($defaultSecondCacheFactory));
+
 		if ($config['debugger'] === NULL) {
 			$config['debugger'] = $builder->parameters['debugMode'];
 		}
@@ -102,14 +113,14 @@ class Extension extends \Nette\Config\CompilerExtension
 
 		$evm = $builder->addDefinition($this->prefix('eventManager'))
 			->setClass('Doctrine\Common\EventManager')
-			->addSetup(get_called_class().'::setupEventManager', array('@self', '@container'));
+			->addSetup(get_called_class() . '::setupEventManager', array('@self', '@container'));
 		if (isset($config['eventManager']) && $config['eventManager']) {
 			$evm->setFactory($config['eventManager']);
 		}
 
 		$connection = $builder->addDefinition($this->prefix('connection'))
 			->setClass('Doctrine\DBAL\Connection')
-			->setFactory(get_called_class().'::createConnection', array($config, $evm));
+			->setFactory(get_called_class() . '::createConnection', array($config, $evm));
 
 		$metadataDriver = $builder->addDefinition($this->prefix('metadataDriver'));
 
@@ -120,9 +131,9 @@ class Extension extends \Nette\Config\CompilerExtension
 
 			$reader = $builder->addDefinition($this->prefix('annotationReader'))
 				->setClass('Doctrine\Common\Annotations\Reader')
-				->setFactory(get_called_class().'::createAnnotationReader', array(
-					$config['annotationCacheDriver'], $config['useSimpleAnnotation']
-				));
+				->setFactory(get_called_class() . '::createAnnotationReader', array(
+						$config['annotationCacheDriver'], $config['useSimpleAnnotation']
+					));
 
 			$builder->addDefinition('discriminatorDiscovery')
 				->setClass('Nella\Doctrine\Listeners\DiscriminatorMapDiscovery', array($reader))
@@ -155,6 +166,13 @@ class Extension extends \Nette\Config\CompilerExtension
 		if ($config['resultCacheDriver']) {
 			$configuration->addSetup('setResultCacheImpl', array(
 				$config['resultCacheDriver'] === TRUE ? $cache : $config['resultCacheDriver'],
+			));
+		}
+
+		if ($config['secondLevelCache']) {
+			$configuration->addSetup('setSecondLevelCacheEnabled', array(TRUE));
+			$configuration->addSetup('setSecondLevelCacheConfiguration', array(
+				$secondLevelCacheConfiguration
 			));
 		}
 
