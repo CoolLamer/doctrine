@@ -27,16 +27,10 @@
 		}
 	},
 	"target-dir": "Nella/Doctrine",
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "http://github.com/CoolLamer/doctrine2.git"
-		}
-	],
 	"require": {
 		"php": ">=5.3.2",
 		"nette/nette": "2.0.*",
-		"coollamer/orm": "dev-slc"
+		"doctrine/dbal": "2.5.0-BETA1"
 	},
 	"suggest": {
 		"nella/console": "Need for console support",
