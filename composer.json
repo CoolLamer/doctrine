@@ -32,7 +32,7 @@
 		"nette/nette": "2.0.*"
 	},
 	"require-dev" : {
-		"doctrine/dbal": "2.5.*@dev"
+		"doctrine/orm": "2.5.*@dev"
 	},
 	"suggest": {
 		"nella/console": "Need for console support",
